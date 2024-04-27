@@ -56,9 +56,9 @@ class AppSong {
                         addASong(user_input);
                         return;
     
-                    // case "c":
-                    //     completeASong();
-                    // break;
+                    case "c":
+                        learnSong();
+                    break;
 
                     // case "clear":
                     //     clearCmdInterface();
@@ -69,13 +69,17 @@ class AppSong {
                     // break;
     
                     default:
-                        System.out.println("Wrong user input, TRy again: \n >>>");
+                        System.out.println("Wrong user input, Try again: \n >>>");
     
                 }
             }
 
             
         }
+    }
+    // Learning a song
+    public static void learnSong() {
+        System.out.println("Enter the songs number to learn");
     }
 
     // Add a song
@@ -106,10 +110,16 @@ class AppSong {
     // method to write to songs.csv
     public static void WriteToSongs(String input, Scanner user_input) throws Exception {
         try {
+
+            // Append unlearned flag to song
+            input +=",u";
+
             BufferedWriter writer = new BufferedWriter(new FileWriter("songs.csv", true));
+
             writer.write(input);
             writer.newLine();
             writer.close();
+
             System.out.println("New song added");
 
         } catch (IOException e) {
