@@ -12,6 +12,8 @@ import java.io.FileWriter;
 class AppSong {
 
     // Apps Entry point
+
+
     public static void main(String [] args) throws Exception {
 
         try {
@@ -30,7 +32,7 @@ class AppSong {
             
             // User input Scanner object
             Scanner user_input = new Scanner(System.in);
-            validateInput(user_input);
+            validateInput(user_input, numberOfSongs);
 
         } catch (Exception e) {
             System.out.print("An error occurred" + e.getMessage());
@@ -40,7 +42,7 @@ class AppSong {
     }
 
     // User input validation
-    public static void validateInput(Scanner user_input) throws Exception {
+    public static void validateInput(Scanner user_input, Integer numberOfSongs) throws Exception {
         System.out.print(">>>");
         String  command;
 
@@ -49,15 +51,15 @@ class AppSong {
                 command = user_input.next();
                 switch(command.toLowerCase()) {
                     case "d":                
-                        displayAllSongs(user_input);
+                        displayAllSongs(user_input, numberOfSongs);
                         return;
     
                     case "a":
-                        addASong(user_input);
+                        addASong(user_input, numberOfSongs);
                         return;
     
                     case "c":
-                        learnSong();
+                        learnSong(numberOfSongs, user_input);
                     break;
 
                     // case "clear":
@@ -76,14 +78,65 @@ class AppSong {
 
             
         }
-    }
+    } 
+    
+    
     // Learning a song
-    public static void learnSong() {
+    public static void learnSong(Integer numberOfSongs, Scanner user_input) throws Exception {
+        String songs = getSongList(null);
+
+        String[] songsArray = null;
+        songsArray = songs.split("\n");
+        
         System.out.println("Enter the songs number to learn");
+        Scanner songNumber = new Scanner(System.in);
+
+        while(true) {          
+
+            int num = songNumber.nextInt();
+            if (num <= 0  || num > numberOfSongs) {
+                System.out.println("Song does not exist!! \nTry Again:\n>>> ");
+            } else{
+                //  get selected song
+                String selectedSong  = songsArray[num-1];
+                // split song into title and artist
+                String[] songParts = selectedSong.split(",");
+                System.out.println("checking: " + songParts[3]);
+
+                if (songParts.length == 4 && songParts[3].equals("u")) {
+                    System.out.println("see if chnged" + songParts[3]);
+                    songParts = new String[]{songParts[0], songParts[1], songParts[2], "l"};
+
+                    System.out.println("see if chnged" + songParts[3]);
+
+                    songsArray[num - 1] = String.join(",", songParts);
+                    for (String song: songsArray){
+                        System.out.println(song+"\n");
+                    }
+                    
+                   BufferedWriter writer = new BufferedWriter(new FileWriter("songs.csv"));
+                   for (String line : songsArray){
+                    writer.write(line);
+                    writer.newLine();
+                   }
+                   writer.close();
+                } else{
+                    System.out.println("An error occurred: Song already learned");
+                }
+
+            }
+            
+            // Print the menu again
+            System.out.println("Menu: \n D = Display songs. \n A = Add new song \n C = complete a song \n Q = quit \n");
+
+            // Call the validateInput method to handle user input
+            validateInput(user_input, numberOfSongs);
+        }
+        
     }
 
     // Add a song
-    public static void addASong(Scanner user_input) throws Exception{
+    public static void addASong(Scanner user_input, Integer numberOfSongs) throws Exception{
         Scanner newsongString = new Scanner(System.in);
         System.out.println("Enter new song details: \n format:  \n Title, Author, Year");
         
@@ -97,12 +150,12 @@ class AppSong {
                 System.out.println("Incorrect number of inputs! Try Again.\n Format: Title, Author, Year\n>>>");
                 System.out.println("Wrong input format! Try again:\n>>>");
             }
-            // newsongString.close();
+            newsongString.close();
             // Print the menu again
             System.out.println("Menu: \n D = Display songs. \n A = Add new song \n C = complete a song \n Q = quit \n");
 
             // Call the validateInput method to handle user input
-            validateInput(user_input);
+            validateInput(user_input, numberOfSongs);
         }
 
     }
@@ -129,7 +182,7 @@ class AppSong {
     }
 
     // Display all songs
-    public static void displayAllSongs(Scanner user_input) throws Exception {
+    public static void displayAllSongs(Scanner user_input, Integer numberOfSongs) throws Exception {
         String songs = getSongList(null);
         if (songs == null || songs.length() <= 0) {
             throw new Exception("No song in the list!");
@@ -140,7 +193,7 @@ class AppSong {
         System.out.println("Menu: \n D = Display songs. \n A = Add new song \n C = complete a song \n Q = quit \n");
 
         // Call the validateInput method to handle user input
-        validateInput(user_input);
+        validateInput(user_input, numberOfSongs);
     }
 
     //  Metgod to read csv file
